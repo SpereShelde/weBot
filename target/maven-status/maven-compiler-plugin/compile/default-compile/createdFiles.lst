@@ -1,0 +1,8 @@
+ink/wzf/entities/model/Message.class
+ink/wzf/entities/model/Member.class
+ink/wzf/entities/model/Chat.class
+ink/wzf/service/Wxbot.class
+ink/wzf/handler/WechatHandler.class
+ink/wzf/Application.class
+ink/wzf/entities/model/Group.class
+ink/wzf/controller/IndexController.class

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-userTo-fit=no">
+    <!-- Bootstrap CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/static/css/cover.css" rel="stylesheet">
+    <script src="/static/js/jquery-3.3.1.min.js"></script>
+    <title>Wechat Bot - try</title>
+</head>
+<body class="text-center">
+<script type="text/javascript">
+    var done = "false";
+    var wbTimer;
+    $(function(){
+        $("#alert").hide();
+        $("#after").hide();
+        $("#message").hide();
+        $("#exit").hide();
+        $("#pre").show();
+        wbTimer = window.setInterval("webSocket.send('new');", 300);
+    });
+    var webSocket = new WebSocket('ws://127.0.0.1:7000/wechat');
+    webSocket.onmessage = function(event) {
+        var message = event.data;
+        console.log(message);
+        if (message == "Done") {
+            window.clearInterval(wbTimer);
+            $("#qrcode").hide(1000);
+            $("#alert").hide(500);
+            $("#after").show(500);
+            setTimeout(function(){$("#after").hide(2000)}, 500);
+            $("#message").show(500);
+            $("#exit").show(500);
+            done = "true";
+        } else {
+            if (done == "true" && message != "") document.getElementById("textarea").value += message + '\n';
+            else {
+                $("#pre").hide();
+                $("#alert").show(500);
+                document.getElementById("qrcode").outerHTML = '<img id="qrcode" src="' + message + '">';
+            }
+        }
+    };
+    function kill() {
+        done = "false";
+        webSocket.send('kill');
+        document.getElementById("textarea").value = '';
+        $("#message").hide(500);
+        $("#exit").hide(500);
+        $("#pre").show(500);
+        $("#alert").hide();
+        $("#after").hide();
+        document.getElementById("qrcode").outerHTML = '<img id="qrcode" src="">';
+        $("#qrcode").show(500);
+        wbTimer = window.setInterval("webSocket.send('new');", 300);
+    }
+</script>
+<div class="container-fluid">
+    <div class="row" style="margin-top: 16px">
+        <div class="col">
+        </div>
+        <div class="col-6">
+            <header class="masthead mb-auto">
+                <div class="inner">
+                    <h3 class="masthead-brand">WeBot</h3>
+                    <nav class="nav nav-masthead justify-content-center">
+                        <a class="nav-link" href="index">Home</a>
+                        <a class="nav-link active" href="wechat">Try</a>
+                        <a class="nav-link" href="about">About</a>
+                    </nav>
+                </div>
+            </header>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 5%">
+        <div class="col">
+        </div>
+        <div class="col-6">
+            <img id="qrcode" src="">
+            <div class="alert alert-primary" id="alert" role="alert" style="margin-top: 10px;">
+                Please scan QR code to login
+            </div>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-6">
+            <div class="alert alert-primary" id="pre" role="alert" style="margin-top: 10px;">
+                Please Wait
+            </div>
+            <div class="alert alert-primary" id="after" role="alert" style="margin-top: 10px;">
+                Login Success
+            </div>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+        </div>
+        <div class="col-6">
+            <form>
+                <div class="form-group" id="message">
+                    <label for="message">Messages</label>
+                    <textarea class="form-control" id="textarea" rows="20"></textarea>
+                </div>
+                <button type="button" class="btn btn-primary" id="exit" style="float: right" onclick='kill()'>Exit</button>
+            </form>
+
+        </div>
+        <div class="col">
+        </div>
+    </div>
+
+    <footer class="mastfoot mt-auto">
+        <div class="inner">
+            <p>WeBot demo designed by <a href="https://github.com/SpereShelde">SpereShelde</a> (Zifan Wang). </p>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
